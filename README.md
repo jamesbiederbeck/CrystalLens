@@ -1,6 +1,11 @@
 <div align="center">
 
-# CrystalLens
+# CrystalLens for Personal Privacy
+
+I have forked this project so I can rework it to support folks who might be worried about their online safety in light of... *gestures broadly at the state of the world*.
+
+I don't think this project should exist in its current form, and my goal is to pick up the technology of the oppressors so you can do a self-check. 
+
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Made with Flask](https://img.shields.io/badge/Made%20with-Flask-000?logo=flask&logoColor=white)](#)
