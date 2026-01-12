@@ -13,10 +13,11 @@
   <p>{{ analysis.character_assessment }}</p>
 {% endif %}
 {% if analysis.behavioral_insights %}
+  {% set assessment_separator = 'Privacy Assessments:' if 'Privacy Assessments:' in analysis.behavioral_insights else ('Assessments:' if 'Assessments:' in analysis.behavioral_insights else None) %}
   <h5>Compromising Content Analysis</h5>
-  {% if 'Assessments:' in analysis.behavioral_insights or 'Privacy Assessments:' in analysis.behavioral_insights %}
-    {% set bi_parts = analysis.behavioral_insights.split('Assessments:')[0] if 'Assessments:' in analysis.behavioral_insights else analysis.behavioral_insights.split('Privacy Assessments:')[0] %}
-    <p>{{ bi_parts }}</p>
+  {% if assessment_separator %}
+    {% set bi_parts = analysis.behavioral_insights.split(assessment_separator) %}
+    <p>{{ bi_parts[0] }}</p>
   {% else %}
     <p>{{ analysis.behavioral_insights }}</p>
   {% endif %}
@@ -31,8 +32,10 @@
 {% endif %}
 
 {# Extract a dedicated Specific Privacy Assessments section if present inside behavioral_insights #}
-{% if analysis.behavioral_insights and ('Assessments:' in analysis.behavioral_insights or 'Privacy Assessments:' in analysis.behavioral_insights) %}
-  {% set parts = analysis.behavioral_insights.split('Privacy Assessments:') if 'Privacy Assessments:' in analysis.behavioral_insights else analysis.behavioral_insights.split('Assessments:') %}
+{% if analysis.behavioral_insights %}
+  {% set assessment_separator = 'Privacy Assessments:' if 'Privacy Assessments:' in analysis.behavioral_insights else ('Assessments:' if 'Assessments:' in analysis.behavioral_insights else None) %}
+  {% if assessment_separator %}
+    {% set parts = analysis.behavioral_insights.split(assessment_separator) %}
   {% if parts|length > 1 %}
     {% set assess_block = parts[1] %}
     {% set lines = assess_block.split('\n') %}
