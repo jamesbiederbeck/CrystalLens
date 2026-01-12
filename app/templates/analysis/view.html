@@ -1,38 +1,41 @@
 {% extends 'layout.html' %}
-{% block title %}Analysis Report{% endblock %}
+{% block title %}Privacy Audit Report{% endblock %}
 {% block content %}
 <div id="analysis-content">
-<h3>Analysis for {{ analysis.employee.full_name }}</h3>
+<h3>Privacy Audit for {{ analysis.employee.full_name }}</h3>
 <p><strong>Date:</strong> {{ analysis.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
-<p><strong>Risk:</strong> {{ analysis.risk_score or 'N/A' }} ({{ analysis.get_risk_level() }})</p>
+<p><strong>Privacy Exposure Score:</strong> {{ analysis.risk_score or 'N/A' }} ({{ analysis.get_risk_level() }})</p>
 <p><strong>Confidence:</strong> {{ analysis.confidence_score or 'N/A' }}</p>
 <p><strong>Posts analyzed:</strong> {{ analysis.posts_analyzed }}</p>
 
 {% if analysis.character_assessment %}
-  <h5>Character Assessment</h5>
+  <h5>Privacy Risk Analysis</h5>
   <p>{{ analysis.character_assessment }}</p>
 {% endif %}
 {% if analysis.behavioral_insights %}
-  <h5>Behavioral Insights</h5>
-  {% if 'Assessments:' in analysis.behavioral_insights %}
-    {% set bi_parts = analysis.behavioral_insights.split('Assessments:') %}
+  {% set assessment_separator = 'Privacy Assessments:' if 'Privacy Assessments:' in analysis.behavioral_insights else ('Assessments:' if 'Assessments:' in analysis.behavioral_insights else None) %}
+  <h5>Compromising Content Analysis</h5>
+  {% if assessment_separator %}
+    {% set bi_parts = analysis.behavioral_insights.split(assessment_separator) %}
     <p>{{ bi_parts[0] }}</p>
   {% else %}
     <p>{{ analysis.behavioral_insights }}</p>
   {% endif %}
 {% endif %}
 {% if analysis.red_flags %}
-  <h5>Red Flags</h5>
+  <h5>Privacy Concerns</h5>
   <ul>{% for r in analysis.red_flags %}<li>{{ r }}</li>{% endfor %}</ul>
 {% endif %}
 {% if analysis.positive_indicators %}
-  <h5>Positive Indicators</h5>
+  <h5>Good Privacy Practices</h5>
   <ul>{% for p in analysis.positive_indicators %}<li>{{ p }}</li>{% endfor %}</ul>
 {% endif %}
 
-{# Extract a dedicated Specific Assessments section if present inside behavioral_insights #}
-{% if analysis.behavioral_insights and 'Assessments:' in analysis.behavioral_insights %}
-  {% set parts = analysis.behavioral_insights.split('Assessments:') %}
+{# Extract a dedicated Specific Privacy Assessments section if present inside behavioral_insights #}
+{% if analysis.behavioral_insights %}
+  {% set assessment_separator = 'Privacy Assessments:' if 'Privacy Assessments:' in analysis.behavioral_insights else ('Assessments:' if 'Assessments:' in analysis.behavioral_insights else None) %}
+  {% if assessment_separator %}
+    {% set parts = analysis.behavioral_insights.split(assessment_separator) %}
   {% if parts|length > 1 %}
     {% set assess_block = parts[1] %}
     {% set lines = assess_block.split('\n') %}
@@ -60,18 +63,16 @@
       {% endif %}
     {% endfor %}
 
-    <h5>Specific Assessments</h5>
+    <h5>Specific Privacy Assessments</h5>
     <div class="table-responsive">
       <table class="table table-sm align-middle">
         <tbody>
           {% set order = [
-            'Political orientation',
-            'Religious orientation',
-            'Violence tendency',
-            'Political/Religious affiliation',
-            'Suitability for sensitive positions',
-            'Bias against class/gender/color',
-            'Personal problems shared publicly'
+            'Leaked PII',
+            'Compromising content',
+            'Reputation risks',
+            'Location tracking patterns',
+            'Oversharing patterns'
           ] %}
           {% set rendered = 0 %}
           {% for key in order %}

@@ -66,11 +66,11 @@ class GeminiService:
         }
 
         default_dims = [
-            'political_orientation',
-            'religious_orientation',
-            'violence_tendency',
-            'political_or_religious_affiliation',
-            'suitability_for_sensitive_positions',
+            'leaked_pii',
+            'compromising_content',
+            'reputation_risks',
+            'location_tracking_patterns',
+            'oversharing_patterns',
         ]
         try:
             dims_setting = get_setting('ASSESSMENT_DIMENSIONS', None)
@@ -89,34 +89,34 @@ class GeminiService:
 
         sections_text = []
         if 'risk' in checks:
-            sections_text.append("1. RISK ASSESSMENT: Provide a 0-100 score with concise reasoning and citations. " + ov['risk'])
+            sections_text.append("1. PRIVACY EXPOSURE SCORE: Provide a 0-100 score (0-29=low exposure, 30-59=medium, 60-79=high, 80-100=critical) with concise reasoning and citations. " + ov['risk'])
         if 'character' in checks:
-            sections_text.append("2. CHARACTER ASSESSMENT: Personality traits, values, patterns; include reasoning & citations. " + ov['character'])
+            sections_text.append("2. PRIVACY RISK ASSESSMENT: Analyze exposed PII and information that could be used to harm or identify this person; include reasoning & citations. " + ov['character'])
         if 'behavior' in checks:
-            sections_text.append("3. BEHAVIORAL INSIGHTS: Communication patterns and concerning behaviors; include reasoning & citations. " + ov['behavior'])
+            sections_text.append("3. COMPROMISING CONTENT ANALYSIS: Identify content that could be weaponized, taken out of context, or damage reputation; include reasoning & citations. " + ov['behavior'])
         if 'redflags' in checks:
-            sections_text.append("4. RED FLAGS: List items with reason and citation. " + ov['redflags'])
+            sections_text.append("4. PRIVACY CONCERNS: List specific issues (leaked PII, location patterns, oversharing, compromising content, social engineering risks) with reason and citation. " + ov['redflags'])
         if 'positive' in checks:
-            sections_text.append("5. POSITIVE INDICATORS: List items with reason and citation. " + ov['positive'])
+            sections_text.append("5. POSITIVE PRIVACY PRACTICES: List good privacy behaviors with reason and citation. " + ov['positive'])
         if 'assessments' in checks:
             bullet_dims = "\n".join([f"   - {k.replace('_',' ')}" for k in selected_dims])
-            sections_text.append("6. SPECIFIC ASSESSMENTS: For each dimension, add justification and citation(s):\n" + bullet_dims + "\n" + ov['assessments'])
+            sections_text.append("6. SPECIFIC PRIVACY ASSESSMENTS: For each dimension, add justification and citation(s):\n" + bullet_dims + "\n" + ov['assessments'])
 
         sections_block = "\n\n".join(sections_text)
 
         prompt = f"""
-You are an AI analyst. Handle Arabic and English. Use exact quotes; do not fabricate. Avoid speculation beyond evidence.
+You are a privacy analyst helping individuals audit their own social media for security risks. Handle Arabic and English. Use exact quotes; do not fabricate. Avoid speculation beyond evidence.
 
-EMPLOYEE INFORMATION:
-- Employee ID: {employee_info.get('employee_id', 'N/A')}
+PROFILE INFORMATION:
+- Profile ID: {employee_info.get('employee_id', 'N/A')}
 - Name: {employee_info.get('full_name', 'N/A')}
-- Department: {employee_info.get('department', 'N/A')}
-- Position: {employee_info.get('position', 'N/A')}
+- Notes: {employee_info.get('department', 'N/A')}
 
 SOCIAL MEDIA POSTS:
 {posts_text}
 
 ANALYSIS REQUIREMENTS:
+Focus on helping this person identify privacy risks and protect themselves from potential threats.
 {sections_block}
 
 EXTRA INSTRUCTIONS (admin): {extra}
@@ -124,20 +124,18 @@ EXTRA INSTRUCTIONS (admin): {extra}
 Return ONLY JSON:
 {{
   "risk_score": <number 0-100>,
-  "character_assessment": "<text>",
-  "behavioral_insights": "<text>",
-  "red_flags": ["<item (reason, citation)>", "..."],
-  "positive_indicators": ["<item (reason, citation)>", "..."],
+  "character_assessment": "<privacy risk analysis>",
+  "behavioral_insights": "<compromising content analysis>",
+  "red_flags": ["<privacy concern (reason, citation)>", "..."],
+  "positive_indicators": ["<good privacy practice (reason, citation)>", "..."],
   "confidence_score": <number 0-100>,
-  "summary": "<brief summary>",
+  "summary": "<brief privacy findings summary>",
   "assessments": {{
-    "political_orientation": "<summary or 'unknown'>",
-    "religious_orientation": "<summary or 'unknown'>",
-    "violence_tendency": "<summary or 'unknown'>",
-    "political_or_religious_affiliation": "<summary or 'unknown'>",
-    "suitability_for_sensitive_positions": "<yes/no with justification or 'unknown'>",
-    "discrimination_or_bias": "<summary or 'unknown'>",
-    "personal_issues_shared": "<summary or 'unknown'>"
+    "leaked_pii": "<summary or 'none detected'>",
+    "compromising_content": "<summary or 'none detected'>",
+    "reputation_risks": "<summary or 'none detected'>",
+    "location_tracking_patterns": "<summary or 'none detected'>",
+    "oversharing_patterns": "<summary or 'none detected'>"
   }}
 }}
 """
@@ -202,13 +200,11 @@ Return ONLY JSON:
         if isinstance(assessments, dict) and assessments:
             parts = []
             mapping = {
-                'political_orientation': 'Political orientation',
-                'religious_orientation': 'Religious orientation',
-                'violence_tendency': 'Violence tendency',
-                'political_or_religious_affiliation': 'Political/Religious affiliation',
-                'suitability_for_sensitive_positions': 'Suitability for sensitive positions',
-                'discrimination_or_bias': 'Bias against class/gender/color',
-                'personal_issues_shared': 'Personal problems shared publicly',
+                'leaked_pii': 'Leaked PII',
+                'compromising_content': 'Compromising content',
+                'reputation_risks': 'Reputation risks',
+                'location_tracking_patterns': 'Location tracking patterns',
+                'oversharing_patterns': 'Oversharing patterns',
             }
             for k, label in mapping.items():
                 v = assessments.get(k)
@@ -217,9 +213,9 @@ Return ONLY JSON:
             if parts:
                 joined = "\n".join(parts)
                 if result['behavioral_insights']:
-                    result['behavioral_insights'] += "\n\nAssessments:\n" + joined
+                    result['behavioral_insights'] += "\n\nPrivacy Assessments:\n" + joined
                 else:
-                    result['behavioral_insights'] = "Assessments:\n" + joined
+                    result['behavioral_insights'] = "Privacy Assessments:\n" + joined
         return result
 
     def test_connection(self) -> Dict[str, Any]:

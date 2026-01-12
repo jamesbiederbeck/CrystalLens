@@ -50,17 +50,21 @@ class User(UserMixin, db.Model):
         return f'<User {self.username}>'
 
 class Employee(db.Model):
-    """Employee model for storing employee information."""
+    """Profile model for storing user profile information for privacy audits.
+    
+    Note: Table name 'employees' is retained for backward compatibility,
+    but semantically represents user profiles being audited for privacy risks.
+    """
     __tablename__ = 'employees'
     
     id = db.Column(db.Integer, primary_key=True)
-    employee_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    employee_id = db.Column(db.String(50), unique=True, nullable=False, index=True)  # Profile identifier
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), nullable=True)
-    department = db.Column(db.String(100), nullable=True)
-    position = db.Column(db.String(100), nullable=True)
-    hire_date = db.Column(db.Date, nullable=True)
+    department = db.Column(db.String(100), nullable=True)  # Repurposed as general notes/category field
+    position = db.Column(db.String(100), nullable=True)  # Repurposed as additional notes field
+    hire_date = db.Column(db.Date, nullable=True)  # Repurposed as creation/start date
     status = db.Column(db.String(20), default='active')  # active, inactive, under_review
     notes = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -80,7 +84,7 @@ class Employee(db.Model):
         return self.analysis_results.order_by(AnalysisResult.created_at.desc()).first()
     
     def __repr__(self):
-        return f'<Employee {self.employee_id}: {self.full_name}>'
+        return f'<Profile {self.employee_id}: {self.full_name}>'
 
 class SocialMediaAccount(db.Model):
     """Social media account model."""
@@ -136,19 +140,19 @@ class ScrapingJob(db.Model):
         return f'<ScrapingJob {self.id}: {self.status}>'
 
 class AnalysisResult(db.Model):
-    """Analysis result model to store AI analysis."""
+    """Privacy analysis result model to store AI-powered privacy assessments."""
     __tablename__ = 'analysis_results'
     
     id = db.Column(db.Integer, primary_key=True)
     employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=False)
     scraping_job_ids = db.Column(db.JSON, nullable=False)  # List of scraping job IDs used for analysis
     
-    # Analysis results
-    risk_score = db.Column(db.Float, nullable=True)  # 0-100 risk score
-    character_assessment = db.Column(db.Text, nullable=True)
-    behavioral_insights = db.Column(db.Text, nullable=True)
-    red_flags = db.Column(db.JSON, nullable=True)  # List of identified red flags
-    positive_indicators = db.Column(db.JSON, nullable=True)  # List of positive indicators
+    # Analysis results (privacy-focused)
+    risk_score = db.Column(db.Float, nullable=True)  # 0-100 privacy exposure score
+    character_assessment = db.Column(db.Text, nullable=True)  # Repurposed for privacy risk analysis
+    behavioral_insights = db.Column(db.Text, nullable=True)  # Repurposed for compromising content analysis
+    red_flags = db.Column(db.JSON, nullable=True)  # List of privacy concerns (PII leaks, location tracking, etc.)
+    positive_indicators = db.Column(db.JSON, nullable=True)  # List of good privacy practices
     
     # Analysis metadata
     posts_analyzed = db.Column(db.Integer, default=0)
@@ -160,15 +164,15 @@ class AnalysisResult(db.Model):
     analyzed_by = db.Column(db.String(100), nullable=True)  # User who triggered analysis
     
     def get_red_flags(self):
-        """Get red flags as list."""
+        """Get privacy concerns as list."""
         return self.red_flags or []
     
     def get_positive_indicators(self):
-        """Get positive indicators as list."""
+        """Get good privacy practices as list."""
         return self.positive_indicators or []
     
     def get_risk_level(self):
-        """Get risk level based on score."""
+        """Get privacy exposure level based on score."""
         if self.risk_score is None:
             return 'Unknown'
         elif self.risk_score < 30:
@@ -181,7 +185,7 @@ class AnalysisResult(db.Model):
             return 'Critical'
     
     def __repr__(self):
-        return f'<AnalysisResult {self.id}: Risk {self.risk_score}>'
+        return f'<PrivacyAnalysis {self.id}: Exposure {self.risk_score}>'
 
 class AuditLog(db.Model):
     """Audit log model for tracking user actions."""

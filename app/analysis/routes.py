@@ -229,8 +229,8 @@ def start_analysis(employee_id):
         
         db.session.commit()
         
-        flash(f'AI analysis completed for {employee.full_name}. Risk score: {analysis.risk_score or "N/A"}', 'success')
-        logger.info(f"Analysis completed for employee {employee.employee_id}, analysis ID: {analysis.id}")
+        flash(f'Privacy audit completed for {employee.full_name}. Privacy exposure score: {analysis.risk_score or "N/A"}', 'success')
+        logger.info(f"Privacy analysis completed for profile {employee.employee_id}, analysis ID: {analysis.id}")
         
         return redirect(url_for('analysis.view_analysis', id=analysis.id))
         
@@ -266,17 +266,17 @@ def export_pdf(id):
         spaceAfter=30,
         textColor=colors.darkblue
     )
-    story.append(Paragraph("Social Media Analysis Report", title_style))
+    story.append(Paragraph("Privacy Audit Report", title_style))
     story.append(Spacer(1, 12))
     
-    # Employee Information
-    story.append(Paragraph("Employee Information", styles['Heading2']))
+    # Profile Information
+    story.append(Paragraph("Profile Information", styles['Heading2']))
     employee_data = [
-        ['Employee ID:', analysis.employee.employee_id],
+        ['Profile ID:', analysis.employee.employee_id],
         ['Name:', analysis.employee.full_name],
-        ['Department:', analysis.employee.department or 'N/A'],
-        ['Position:', analysis.employee.position or 'N/A'],
-        ['Analysis Date:', analysis.created_at.strftime('%Y-%m-%d %H:%M:%S')],
+        ['Notes:', analysis.employee.department or 'N/A'],
+        ['Category:', analysis.employee.position or 'N/A'],
+        ['Audit Date:', analysis.created_at.strftime('%Y-%m-%d %H:%M:%S')],
         ['Analyzed By:', analysis.analyzed_by or 'System']
     ]
     
@@ -290,8 +290,8 @@ def export_pdf(id):
     story.append(employee_table)
     story.append(Spacer(1, 20))
     
-    # Risk Assessment
-    story.append(Paragraph("Risk Assessment", styles['Heading2']))
+    # Privacy Exposure Assessment
+    story.append(Paragraph("Privacy Exposure Assessment", styles['Heading2']))
     risk_score = analysis.risk_score or 0
     risk_level = analysis.get_risk_level()
     
@@ -309,35 +309,35 @@ def export_pdf(id):
         spaceAfter=12
     )
     
-    story.append(Paragraph(f"Risk Score: {risk_score}/100 ({risk_level})", risk_style))
+    story.append(Paragraph(f"Privacy Exposure Score: {risk_score}/100 ({risk_level})", risk_style))
     story.append(Paragraph(f"Confidence: {analysis.confidence_score or 0}/100", styles['Normal']))
     story.append(Paragraph(f"Posts Analyzed: {analysis.posts_analyzed}", styles['Normal']))
     story.append(Spacer(1, 20))
     
-    # Character Assessment
+    # Privacy Risk Analysis
     if analysis.character_assessment:
-        story.append(Paragraph("Character Assessment", styles['Heading2']))
+        story.append(Paragraph("Privacy Risk Analysis", styles['Heading2']))
         story.append(Paragraph(analysis.character_assessment, styles['Normal']))
         story.append(Spacer(1, 20))
     
-    # Behavioral Insights
+    # Compromising Content Analysis
     if analysis.behavioral_insights:
-        story.append(Paragraph("Behavioral Insights", styles['Heading2']))
+        story.append(Paragraph("Compromising Content Analysis", styles['Heading2']))
         story.append(Paragraph(analysis.behavioral_insights, styles['Normal']))
         story.append(Spacer(1, 20))
     
-    # Red Flags
+    # Privacy Concerns
     red_flags = analysis.get_red_flags()
     if red_flags:
-        story.append(Paragraph("Red Flags", styles['Heading2']))
+        story.append(Paragraph("Privacy Concerns", styles['Heading2']))
         for flag in red_flags:
             story.append(Paragraph(f"• {flag}", styles['Normal']))
         story.append(Spacer(1, 20))
     
-    # Positive Indicators
+    # Good Privacy Practices
     positive_indicators = analysis.get_positive_indicators()
     if positive_indicators:
-        story.append(Paragraph("Positive Indicators", styles['Heading2']))
+        story.append(Paragraph("Good Privacy Practices", styles['Heading2']))
         for indicator in positive_indicators:
             story.append(Paragraph(f"• {indicator}", styles['Normal']))
     

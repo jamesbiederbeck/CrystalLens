@@ -1,14 +1,14 @@
 {% extends 'layout.html' %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-<h3 class="mb-4">Dashboard</h3>
+<h3 class="mb-4">Privacy Audit Dashboard</h3>
 <div class="row g-3">
   <div class="col-md-3">
     <div class="card h-100">
       <div class="card-body d-flex align-items-center">
         <div class="me-3 text-primary"><i class="bi bi-people-fill fs-2"></i></div>
         <div>
-          <div class="text-muted">Employees</div>
+          <div class="text-muted">Profiles</div>
           <div class="display-6">{{ stats.total_employees }}</div>
         </div>
       </div>
@@ -41,7 +41,7 @@
       <div class="card-body d-flex align-items-center">
         <div class="me-3 text-warning"><i class="bi bi-graph-up fs-2"></i></div>
         <div>
-          <div class="text-muted">Recent Analyses</div>
+          <div class="text-muted">Privacy Audits</div>
           <div class="display-6">{{ stats.recent_analyses }}</div>
         </div>
       </div>
@@ -53,12 +53,12 @@
   <div class="col-lg-6">
     <div class="card h-100">
       <div class="card-body">
-        <h5 class="card-title mb-3"><i class="bi bi-person-plus me-2 text-primary"></i>Recent Employees</h5>
+        <h5 class="card-title mb-3"><i class="bi bi-person-plus me-2 text-primary"></i>Recent Profiles</h5>
         <ul class="mb-0">
           {% for e in recent_employees %}
             <li><a href="{{ url_for('employees.view_employee', id=e.id) }}">{{ e.full_name }}</a> ({{ e.department or 'N/A' }})</li>
           {% else %}
-            <li class="text-muted">No recent employees.</li>
+            <li class="text-muted">No recent profiles.</li>
           {% endfor %}
         </ul>
       </div>
@@ -67,12 +67,12 @@
   <div class="col-lg-6">
     <div class="card h-100">
       <div class="card-body">
-        <h5 class="card-title mb-3"><i class="bi bi-clipboard2-pulse me-2 text-danger"></i>Recent Analyses</h5>
+        <h5 class="card-title mb-3"><i class="bi bi-shield-exclamation me-2 text-warning"></i>Recent Privacy Audits</h5>
         <ul class="mb-0">
           {% for a in recent_analyses %}
-            <li><a href="{{ url_for('analysis.view_analysis', id=a.id) }}">{{ a.employee.full_name }}</a> - Risk: {{ a.risk_score or 'N/A' }}</li>
+            <li><a href="{{ url_for('analysis.view_analysis', id=a.id) }}">{{ a.employee.full_name }}</a> - Privacy Exposure: {{ a.risk_score or 'N/A' }}</li>
           {% else %}
-            <li class="text-muted">No recent analyses.</li>
+            <li class="text-muted">No recent privacy audits.</li>
           {% endfor %}
         </ul>
       </div>

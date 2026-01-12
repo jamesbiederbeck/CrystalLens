@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
-{% block title %}Analyses{% endblock %}
+{% block title %}Privacy Audits{% endblock %}
 {% block content %}
-<h3>Analyses</h3>
+<h3>Privacy Audit Reports</h3>
 <table class="table table-striped">
-  <thead><tr><th>Date</th><th>Employee</th><th>Risk</th><th>Confidence</th><th>Actions</th></tr></thead>
+  <thead><tr><th>Date</th><th>Profile</th><th>Privacy Exposure</th><th>Confidence</th><th>Actions</th></tr></thead>
   <tbody>
     {% for a in analyses.items %}
       <tr>
@@ -16,7 +16,7 @@
             <a class="btn btn-sm btn-outline-primary" title="View report" href="{{ url_for('analysis.view_analysis', id=a.id) }}">View</a>
             <a class="btn btn-sm btn-outline-secondary" title="Export PDF" href="{{ url_for('analysis.export_pdf', id=a.id) }}">PDF</a>
             {% if current_user.is_authenticated and current_user.role in ['platform_manager','system_admin'] %}
-            <form method="post" action="{{ url_for('analysis.delete_analysis', id=a.id) }}" onsubmit="return confirm('Delete this analysis permanently?');">
+            <form method="post" action="{{ url_for('analysis.delete_analysis', id=a.id) }}" onsubmit="return confirm('Delete this privacy audit permanently?');">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button class="btn btn-sm btn-outline-danger" title="Delete" type="submit">Delete</button>
             </form>
