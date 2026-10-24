@@ -16,6 +16,8 @@ instance/
 # Reports/exports
 *.pdf
 *.csv
+privacy-data/
+privacy-reports/
 
 # IDE
 .vscode/

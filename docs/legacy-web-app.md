@@ -1,0 +1,95 @@
+> Historical web-app documentation retained for migration reference. The screening
+> prompts, cloud integrations, shared access model, and security claims below have
+> not been converted into a personal privacy product. Use the offline CLI in the
+> root README for the new workflow. The dev server now binds to 127.0.0.1:4444 with
+> its debugger disabled; the old port-5000 instruction below is historical.
+> The old MIT badge is not proof of a license grant: no LICENSE file is present.
+
+<div align="center">
+
+# CrystalLens for Personal Privacy
+
+I have forked this project so I can rework it to support folks who might be worried about their online safety in light of... *gestures broadly at the state of the world*.
+
+I don't think this project should exist in its current form, and my goal is to pick up the technology of the oppressors so you can do a self-check. 
+
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Made with Flask](https://img.shields.io/badge/Made%20with-Flask-000?logo=flask&logoColor=white)](#)
+[![LLM: Ollama](https://img.shields.io/badge/LLM-Ollama-0b2a2a.svg)](#)
+[![LLM: Gemini](https://img.shields.io/badge/LLM-Gemini-4285F4.svg)](#)
+
+Evidence‑driven social media analysis for sensitive roles — on‑prem with Ollama or fast in the cloud with Gemini.
+
+</div>
+
+
+## ✨ Highlights
+- **Employee & Accounts**: Manage employees and attach social accounts.
+- **Scraping**: Start Twitter/Facebook scrapes via Apify with live job status.
+- **AI Analysis**: Single‑request mode (fast) or staged evidence→assessment (robust).
+- **Specific Assessments**: Political orientation, religious orientation, bias, personal issues, violence tendency, affiliation, suitability.
+- **Reports**: Evidence‑backed narratives with citations, PDF export, CSV exports and dashboards.
+- **RBAC & Auditing**: Roles for admin/manager/reviewer; audit log for sensitive actions.
+
+
+
+## 🚀 Quickstart (Dev)
+1) Create a venv and install deps
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+2) Configure `.env`
+```bash
+cp .env.example .env
+# APIFY_API_TOKEN=...
+# OLLAMA_API_URL=http://localhost:11434
+# OLLAMA_MODEL=llama3.1:8b (or qwen2.5:7b-instruct)
+# GOOGLE_API_KEY=... (for Gemini)
+# ANALYSIS_PROVIDER=ollama|gemini
+```
+3) Seed an admin
+```bash
+python scripts/seed_admin.py
+```
+4) Run
+```bash
+python run.py
+# http://127.0.0.1:5000
+```
+
+## ⚙️ Configuration
+- `DATABASE_URL`: PostgreSQL in prod (SQLite for dev is fine)
+- `APIFY_API_TOKEN`: required for scraping
+- `OLLAMA_API_URL`, `OLLAMA_MODEL`: for local LLM
+- `GOOGLE_API_KEY`: for Gemini
+- Set your provider in Settings or via `ANALYSIS_PROVIDER`
+
+## 🤖 Providers
+- **Ollama (local)**: on‑prem, best when data must not leave your infra
+  - `ollama serve`, `ollama pull llama3.1:8b` (or `qwen2.5:7b-instruct`)
+- **Gemini (cloud)**: fastest JSON formatting and latency
+  - Enter `GOOGLE_API_KEY` in Settings; click “Test Gemini”
+
+## 🔒 Security
+- API keys in `.env` (not committed)
+- Sensitive endpoints protected via RBAC
+- Audit logs for critical actions
+
+## 🗺️ Roadmap
+- Detail level presets (speed vs. depth)
+- Chunk‑and‑synthesize long timelines
+- More providers (OpenAI, Claude) via adapter
+
+## 🤝 Contributing
+PRs welcome. Please open issues first for major changes. Keep secrets out of commits.
+
+## ⚠️ Disclaimer
+This project is built for educational and research purposes only.
+It is not intended for real employee surveillance or unlawful use.
+Always comply with local laws, regulations, and platform Terms of Service.
+
+## 📄 License
+MIT — see `LICENSE`.
